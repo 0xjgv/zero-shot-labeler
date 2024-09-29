@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "playground"
+version = "0.1.0"
+description = ""
+authors = ["Juan Gaitán-Villamizar <juans.gaitan@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+levenshtein = "^0.26.0"
+pyahocorasick = "^2.1.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.6.8"
+pytest = "^8.3.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest]
+testpaths = ["tests"]

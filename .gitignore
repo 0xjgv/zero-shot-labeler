@@ -1,0 +1,13 @@
+# ENV
+.pytest_cache
+__pycache__
+.ruff_cache
+.DS_Store
+.vscode
+.venv
+*.env
+
+# Other
+reverse.py
+scraps.py
+NOTES.md
