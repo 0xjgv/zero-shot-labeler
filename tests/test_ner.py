@@ -12,7 +12,11 @@ sample_patterns = [
 
 
 def test_ner_function_basic():
-    matches = ner(text=sample_text, patterns=sample_patterns)
+    matches = ner(
+        message_subject="Sample subject",
+        message_body=sample_text,
+        patterns=sample_patterns,
+    )
 
     expected_matches = [
         {
@@ -20,6 +24,7 @@ def test_ner_function_basic():
             "start_index": 75,
             "value": "CO-3456",
             "end_index": 82,
+            "is_body": True,
             "_id": "2",
         },
         {
@@ -27,12 +32,14 @@ def test_ner_function_basic():
             "value": "OP-1234",
             "start_index": 84,
             "end_index": 91,
+            "is_body": True,
             "_id": "3",
         },
         {
-            "start_index": 100,
             "value": "Order OR-2345",
+            "start_index": 100,
             "end_index": 113,
+            "is_body": True,
             "key": "_title",
             "_id": "1",
         },
@@ -41,6 +48,7 @@ def test_ner_function_basic():
             "start_index": 106,
             "value": "OR-2345",
             "end_index": 113,
+            "is_body": True,
             "_id": "1",
         },
     ]
@@ -51,14 +59,22 @@ def test_ner_function_basic():
 def test_ner_function_case_insensitive():
     lowercase_text = sample_text.lower()
 
-    matches = ner(text=lowercase_text, patterns=sample_patterns)
+    matches = ner(
+        message_subject="Sample subject",
+        message_body=lowercase_text,
+        patterns=sample_patterns,
+    )
 
     assert len(matches) == 4
 
 
 def test_ner_function_no_matches():
     no_match_text = "This text contains no matching patterns."
-    matches = ner(text=no_match_text, patterns=sample_patterns)
+    matches = ner(
+        message_subject="No matches here",
+        message_body=no_match_text,
+        patterns=sample_patterns,
+    )
     assert len(matches) == 0
 
 
@@ -69,7 +85,11 @@ def test_ner_function_overlapping_patterns():
     ]
     text = "abcd"
 
-    matches = ner(text=text, patterns=overlapping_patterns)
+    matches = ner(
+        patterns=overlapping_patterns,
+        message_subject="Sample subject",
+        message_body=text,
+    )
 
     assert matches[0]["value"] == "abc"
     assert matches[1]["value"] == "bcd"
@@ -77,12 +97,20 @@ def test_ner_function_overlapping_patterns():
 
 
 def test_ner_function_empty_input():
-    matches = ner(text="", patterns=sample_patterns)
+    matches = ner(
+        patterns=sample_patterns,
+        message_subject="",
+        message_body="",
+    )
     assert len(matches) == 0
 
 
 def test_ner_function_empty_patterns():
-    matches = ner(text=sample_text, patterns=[])
+    matches = ner(
+        message_subject="Sample subject",
+        message_body="",
+        patterns=[],
+    )
 
     assert len(matches) == 0
 
@@ -91,7 +119,11 @@ def test_ner_function_multiple_occurrences():
     text = "OP-1234 is an opportunity. Another opportunity is OP-1234."
     patterns = [{"_id": "1", "opportunity_number": "OP-1234"}]
 
-    matches = ner(text=text, patterns=patterns)
+    matches = ner(
+        message_subject="Sample subject",
+        message_body=text,
+        patterns=patterns,
+    )
 
     assert matches[1]["start_index"] == 50
     assert matches[0]["start_index"] == 0
@@ -102,7 +134,11 @@ def test_ner_function_pattern_at_text_boundaries():
     patterns = [{"_id": "1", "opportunity_number": "OP-1234"}]
     text = "OP-1234 is at the start and the end is OP-1234"
 
-    matches = ner(text=text, patterns=patterns)
+    matches = ner(
+        message_subject="Sample subject",
+        message_body=text,
+        patterns=patterns,
+    )
 
     assert matches[1]["start_index"] == 39
     assert matches[0]["start_index"] == 0
@@ -112,7 +148,11 @@ def test_ner_function_pattern_at_text_boundaries():
 def test_ner_function_with_special_characters():
     patterns = [{"_id": "1", "opportunity_number": "OP-1234"}]
     text = "Special chars: !@#$%^&*() and OP-1234."
-    matches = ner(text=text, patterns=patterns)
+    matches = ner(
+        message_subject="Sample subject",
+        message_body=text,
+        patterns=patterns,
+    )
 
     assert matches[0]["start_index"] == 30
     assert len(matches) == 1
@@ -129,12 +169,19 @@ def test_ner_function_with_special_characters():
     ],
 )
 def test_ner_function_parametrized(input_text, expected_count):
-    matches = ner(text=input_text, patterns=sample_patterns)
+    matches = ner(
+        message_subject="Sample subject",
+        message_body=input_text,
+        patterns=sample_patterns,
+    )
     assert len(matches) == expected_count
 
 
 def test_ner_function_german_email():
-    german_email = """
+    message_subject = (
+        "Betreff: Auftragsstatus AUF-2023-001 und Vertragsverlängerung VTR-4567"
+    )
+    message_body = """
     Betreff: Auftragsstatus AUF-2023-001 und Vertragsverlängerung VTR-4567
 
     Sehr geehrter Herr Müller,
@@ -168,9 +215,13 @@ def test_ner_function_german_email():
         },
     ]
 
-    matches = ner(text=german_email, patterns=german_patterns)
+    matches = ner(
+        message_subject=message_subject,
+        message_body=message_body,
+        patterns=german_patterns,
+    )
 
-    assert len(matches) == 13
+    assert len(matches) == 15
 
     # Check if all expected patterns are found
     found_patterns = set(match["value"] for match in matches)
@@ -198,18 +249,26 @@ def test_ner_function_german_email():
     # Check if the start and end indices are correct for one of the matches
     auf_match = next(match for match in matches if match["value"] == "AUF-2023-001")
     assert (
-        german_email[auf_match["start_index"] : auf_match["end_index"]]
+        message_subject[auf_match["start_index"] : auf_match["end_index"]]
         == "AUF-2023-001"
     )
 
     # Check if case-insensitive matching works
-    lowercase_email = german_email.lower()
-    lowercase_matches = ner(text=lowercase_email, patterns=german_patterns)
+    lowercase_subject = message_subject.lower()
+    lowercase_body = message_body.lower()
+    lowercase_matches = ner(
+        message_subject=lowercase_subject,
+        message_body=lowercase_body,
+        patterns=german_patterns,
+    )
     assert len(lowercase_matches) == len(matches)
 
 
 def test_ner_function_german_email_with_fuzzy_matching():
-    german_email = """
+    message_subject = (
+        "Betreff: Auftragsstatus AUF-2023-001 und Vertragsverlängerung VTR-4567"
+    )
+    message_body = """
     Betreff: Auftragsstatus AUF-2023-001 und Vertragsverlängerung VTR-4567
 
     Sehr geehrter Herr Müller,
@@ -244,9 +303,14 @@ def test_ner_function_german_email_with_fuzzy_matching():
     ]
 
     # Use fuzzy matching with a threshold of 1
-    matches = ner(text=german_email, patterns=german_patterns, fuzzy_threshold=1)
+    matches = ner(
+        message_subject=message_subject,
+        message_body=message_body,
+        patterns=german_patterns,
+        fuzzy_threshold=1,
+    )
 
-    assert len(matches) == 13
+    assert len(matches) == 15
 
     # Check if all expected patterns are found
     found_patterns = set(match["value"] for match in matches)
@@ -274,16 +338,19 @@ def test_ner_function_german_email_with_fuzzy_matching():
     # Check if the start and end indices are correct for one of the matches
     auf_match = next(match for match in matches if match["value"] == "AUF-2023-001")
     assert (
-        german_email[auf_match["start_index"] : auf_match["end_index"]]
+        message_subject[auf_match["start_index"] : auf_match["end_index"]]
         == "AUF-2023-001"
     )
 
     # Test fuzzy matching with a slight typo
-    german_email_with_typo = german_email.replace("AUF-2023-001", "AUF-2023-00l")
+    message_body_with_typo = message_body.replace("AUF-2023-001", "AUF2023-00l")
     matches_with_typo = ner(
-        text=german_email_with_typo, patterns=german_patterns, fuzzy_threshold=1
+        message_body=message_body_with_typo,
+        message_subject=message_subject,
+        patterns=german_patterns,
+        fuzzy_threshold=1,
     )
-    assert len(matches_with_typo) == 10
+    assert len(matches_with_typo) == 12
 
 
 # Add more tests as needed

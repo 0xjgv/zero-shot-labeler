@@ -13,7 +13,7 @@ class TrieNode:
         self.fail = None
 
 
-class AhoCorasickNER:
+class AhoCorasick:
     __slots__ = ["automaton", "patterns"]
 
     def __init__(self, *, patterns: list[dict[str, str]]):
@@ -32,13 +32,14 @@ class AhoCorasickNER:
     def normalize(self, text: str) -> str:
         return text.lower()
 
-    def __call__(self, *, text: str) -> dict[str, Any]:
+    def __call__(self, *, text: str, **kwargs) -> dict[str, Any]:
         normalized_text = self.normalize(text)
         matches = []
 
         for i, data in self.automaton.iter(normalized_text):
             matches.append(
                 {
+                    **kwargs,
                     "start_index": i - len(data[2]) + 1,
                     "end_index": i + 1,
                     "value": data[2],
@@ -57,7 +58,7 @@ if __name__ == "__main__":
         {"_id": "1", "order_number": "OR-2345", "_title": "Order OR-2345"},
     ]
 
-    ner = AhoCorasickNER(patterns=targets)
-    matches = ner.process_text(text)
+    ner = AhoCorasick(patterns=targets)
+    matches = ner(text=text, **{"test": "test"})
     for m in matches["matches"]:
         print(m)
