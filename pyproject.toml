@@ -6,17 +6,20 @@ authors = ["Juan Gaitán-Villamizar <juans.gaitan@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
-levenshtein = "^0.26.0"
-pyahocorasick = "^2.1.0"
+python = ">=3.11"
+transformers = {extras = ["torch"], version = "^4.46.3"}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.6.8"
 pytest = "^8.3.3"
+ipykernel = "^6.29.5"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+preload = "playground.labeler:preload"
 
 [tool.pytest]
 testpaths = ["tests"]

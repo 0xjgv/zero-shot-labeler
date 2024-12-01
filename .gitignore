@@ -11,3 +11,6 @@ __pycache__
 reverse.py
 scraps.py
 NOTES.md
+
+# Model
+*/opt/ml/model
