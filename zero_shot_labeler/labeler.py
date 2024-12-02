@@ -64,3 +64,6 @@ class Labeler:
 # This saves time on the first request and allows
 # for faster subsequent requests.
 preload = Labeler.preload_model
+
+if __name__ == "__main__":
+    preload()

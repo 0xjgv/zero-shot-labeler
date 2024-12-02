@@ -18,8 +18,5 @@ ipykernel = "^6.29.5"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-preload = "zero_shot_labeler.labeler:preload"
-
 [tool.pytest]
 testpaths = ["tests"]

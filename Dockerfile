@@ -8,14 +8,14 @@ RUN pip install poetry==1.8.4 && \
 COPY pyproject.toml poetry.lock ./
 
 # Install dependencies
-RUN poetry install --only main
+RUN poetry install --no-cache --no-root --only main
 
 # Copy application code
 COPY zero_shot_labeler ${LAMBDA_TASK_ROOT}/zero_shot_labeler/
 
-# Run preload script in builder
+# Make the model directory and run the preload script in builder
 RUN mkdir -p /opt/ml/model && \
-  poetry run preload
+  poetry run python zero_shot_labeler/labeler.py
 
 # Set Python path
 ENV PYTHONPATH "${LAMBDA_TASK_ROOT}"
