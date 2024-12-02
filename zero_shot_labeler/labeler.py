@@ -6,7 +6,6 @@ from typing import cast
 from transformers import AutoTokenizer, pipeline
 
 default_model = "MoritzLaurer/deberta-v3-large-zeroshot-v2.0"
-default_device = 0  # CPU
 
 MODEL_PATH = Path(__file__).parent / "opt/ml/model"
 
@@ -23,7 +22,7 @@ class Labeler:
         return cls._instance
 
     @classmethod
-    def preload_model(cls, model: str = default_model, device: int = default_device):
+    def preload_model(cls, model: str = default_model):
         """Preload the model during container initialization"""
         if MODEL_PATH.exists():
             print(f"Model already exists at {MODEL_PATH}")
@@ -35,12 +34,11 @@ class Labeler:
         pipeline(
             "zero-shot-classification",
             tokenizer=tokenizer,
-            device=device,
             model=model,
         ).save_pretrained(MODEL_PATH)
         print(f"Model preloaded in {time() - starting_time:.2f} seconds")
 
-    def __init__(self, model: str = default_model, device: int = default_device):
+    def __init__(self, model: str = default_model):
         if not hasattr(self, "pipeline"):
             model_path = MODEL_PATH.as_posix() if MODEL_PATH.exists() else model
             starting_time = time()
@@ -48,7 +46,6 @@ class Labeler:
             self.pipeline = pipeline(
                 "zero-shot-classification",
                 model=model_path,
-                device=device,
             )
             print(f"Model loaded in {time() - starting_time:.2f} seconds")
 

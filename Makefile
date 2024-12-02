@@ -24,10 +24,10 @@ run-lambda:
 	poetry run python playground/test_lambda.py
 
 image:
-	docker build -t zero-shot-classifier .
+	docker build -t zero-shot-labeler . --force-rm
 
 run-image:
-	docker run -p 9000:8080 zero-shot-classifier:latest
+	docker run -p 9000:8080 zero-shot-labeler:latest
 
 test-endpoint:
 	curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{ \
