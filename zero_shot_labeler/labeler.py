@@ -5,8 +5,9 @@ from typing import cast
 
 from transformers import AutoTokenizer, pipeline
 
-default_model = "MoritzLaurer/deberta-v3-large-zeroshot-v2.0"
-
+DEFAULT_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v2.0"
+# The model is stored in the Docker image at this path
+# /var/task/zero_shot_labeler/opt/ml/model
 MODEL_PATH = Path(__file__).parent / "opt/ml/model"
 
 
@@ -22,7 +23,7 @@ class Labeler:
         return cls._instance
 
     @classmethod
-    def preload_model(cls, model: str = default_model):
+    def preload_model(cls, model: str = DEFAULT_MODEL):
         """Preload the model during container initialization"""
         if MODEL_PATH.exists():
             print(f"Model already exists at {MODEL_PATH}")
@@ -38,7 +39,7 @@ class Labeler:
         ).save_pretrained(MODEL_PATH)
         print(f"Model preloaded in {time() - starting_time:.2f} seconds")
 
-    def __init__(self, model: str = default_model):
+    def __init__(self, model: str = DEFAULT_MODEL):
         if not hasattr(self, "pipeline"):
             model_path = MODEL_PATH.as_posix() if MODEL_PATH.exists() else model
             starting_time = time()

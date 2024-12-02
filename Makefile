@@ -24,7 +24,13 @@ run-lambda:
 	poetry run python playground/test_lambda.py
 
 image:
-	docker build -t zero-shot-labeler . --force-rm
+	docker build -t zero-shot-labeler --force-rm --progress=plain --no-cache .
+
+image-inspect:
+	docker image inspect zero-shot-labeler:latest
+
+image-inspect-size:
+	docker run --rm --entrypoint sh zero-shot-labeler:latest -c "du -ah / | sort -rh | head -n 20"
 
 run-image:
 	docker run -p 9000:8080 zero-shot-labeler:latest
