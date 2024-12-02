@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from playground.lambda_handler import handler
+from zero_shot_labeler.lambda_handler import handler
 
 
 def invoke_lambda(payload: dict[str, Any]) -> dict[str, Any]:

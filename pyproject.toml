@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "playground"
+name = "zero_shot_labeler"
 version = "0.1.0"
 description = ""
 authors = ["Juan Gaitán-Villamizar <juans.gaitan@gmail.com>"]
@@ -19,7 +19,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-preload = "playground.labeler:preload"
+preload = "zero_shot_labeler.labeler:preload"
 
 [tool.pytest]
 testpaths = ["tests"]

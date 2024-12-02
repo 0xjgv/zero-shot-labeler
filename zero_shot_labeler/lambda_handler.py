@@ -1,7 +1,7 @@
 from time import time
 from typing import Any
 
-from playground.labeler import Labeler
+from zero_shot_labeler.labeler import Labeler
 
 labeler = Labeler()
 
