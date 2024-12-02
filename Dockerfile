@@ -11,7 +11,7 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry install --only main
 
 # Copy application code
-COPY playground ${LAMBDA_TASK_ROOT}/playground/
+COPY zero_shot_labeler ${LAMBDA_TASK_ROOT}/zero_shot_labeler/
 
 # Run preload script in builder
 RUN mkdir -p /opt/ml/model && \
@@ -21,4 +21,4 @@ RUN mkdir -p /opt/ml/model && \
 ENV PYTHONPATH "${LAMBDA_TASK_ROOT}"
 
 # Lambda handler
-CMD [ "playground.lambda_handler.handler" ]
+CMD [ "zero_shot_labeler.lambda_handler.handler" ]
