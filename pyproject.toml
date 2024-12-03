@@ -1,7 +1,6 @@
 [tool.poetry]
 description = "A lightweight zero-shot labeler for text classification"
 authors = ["Juan Gaitán-Villamizar <juans.gaitan@gmail.com>"]
-requires-python = ">=3.11"
 name = "zero_shot_labeler"
 readme = "README.md"
 version = "0.0.3"

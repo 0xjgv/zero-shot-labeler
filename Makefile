@@ -1,3 +1,6 @@
+# Load environment variables from .env into the current shell
+include .env
+
 install:
 	poetry config virtualenvs.in-project true
 	poetry env use python3.11
@@ -40,3 +43,11 @@ test-endpoint:
 		"text": "The customer service was excellent and resolved my issue quickly!", \
 		"labels": ["positive", "negative", "neutral"] \
 	}'
+
+# Configure Poetry with PyPI token from .env
+config-pypi:
+	@poetry config pypi-token.pypi $(POETRY_PYPI_TOKEN)
+
+# Publish to PyPI
+publish: config-pypi
+	poetry publish --build
