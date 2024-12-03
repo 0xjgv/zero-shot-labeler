@@ -1,4 +1,5 @@
 from pathlib import Path
+from sys import argv
 from threading import Lock
 from time import time
 from typing import NamedTuple, cast
@@ -31,9 +32,9 @@ class Labeler:
         return cls._instance
 
     @classmethod
-    def preload_model(cls, model: str = DEFAULT_MODEL):
+    def preload_model(cls, *, model: str = DEFAULT_MODEL, force_download: bool = False):
         """Preload the model during container initialization"""
-        if MODEL_PATH.exists():
+        if MODEL_PATH.exists() and not force_download:
             print(f"Model already exists at {MODEL_PATH}")
             return
 
@@ -74,4 +75,5 @@ class Labeler:
 preload = Labeler.preload_model
 
 if __name__ == "__main__":
-    preload()
+    force_download = "--force-download" in argv
+    preload(force_download=force_download)
