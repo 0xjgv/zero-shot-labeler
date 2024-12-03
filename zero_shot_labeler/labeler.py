@@ -1,7 +1,7 @@
 from pathlib import Path
 from threading import Lock
 from time import time
-from typing import cast
+from typing import NamedTuple, cast
 
 from transformers import AutoTokenizer, pipeline
 
@@ -9,6 +9,14 @@ DEFAULT_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v2.0"
 # The model is stored in the Docker image at this path
 # /var/task/zero_shot_labeler/opt/ml/model
 MODEL_PATH = Path(__file__).parent / "opt/ml/model"
+
+
+LabelerOutput = dict[str, float]
+
+
+class LabelScore(NamedTuple):
+    score: float
+    label: str
 
 
 class Labeler:
@@ -50,7 +58,7 @@ class Labeler:
             )
             print(f"Model loaded in {time() - starting_time:.2f} seconds")
 
-    def __call__(self, text: str, labels: list[str]) -> dict[str, float]:
+    def __call__(self, text: str, labels: list[str]) -> LabelerOutput:
         starting_time = time()
         print(f"Classifying text: {text}")
         output = cast(dict[str, list], self.pipeline(text, labels))
