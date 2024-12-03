@@ -17,11 +17,11 @@ lint: format clean
 test:
 	poetry run pytest -vv
 
-test-lambda:
-	poetry run pytest playground/test_lambda.py -v
-
 run-lambda:
 	poetry run python playground/test_lambda.py
+
+preload-model:
+	poetry run python zero_shot_labeler/preload.py
 
 image:
 	docker build -t zero-shot-labeler --force-rm --progress=plain --no-cache .
