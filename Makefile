@@ -11,7 +11,7 @@ format:
 	poetry run ruff format .
 
 clean:
-	rm -rf .pytest_cache */__pycache__ */*/__pycache__
+	rm -rf .pytest_cache __pycache__ */__pycache__ */*/__pycache__
 	poetry run ruff clean
 
 lint: format clean
