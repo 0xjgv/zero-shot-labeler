@@ -1,9 +1,9 @@
 from time import time
 from typing import Any
 
-from zero_shot_labeler.labeler import Labeler
+from zero_shot_labeler import ZeroShotLabeler
 
-labeler = Labeler()
+zero_shot_labeler = ZeroShotLabeler()
 
 
 def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
@@ -32,7 +32,7 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         raise ValueError("'text' must be a string")
 
     start_time = time()
-    scores = labeler(text, labels)
+    scores = zero_shot_labeler(text, labels)
     duration = time() - start_time
 
     # Return classification results

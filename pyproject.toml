@@ -19,6 +19,7 @@ transformers = {extras = ["torch"], version = "^4.46.3"}
 ruff = "^0.6.8"
 pytest = "^8.3.3"
 ipykernel = "^6.29.5"
+modal = "^0.67.23"
 
 [build-system]
 requires = ["poetry-core"]
