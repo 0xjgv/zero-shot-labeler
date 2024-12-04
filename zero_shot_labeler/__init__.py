@@ -43,7 +43,7 @@ class ZeroShotLabeler:
         starting_time = time()
         snapshot_download(
             model,
-            allow_patterns=["*.json", "*.bin", "*.pt", "*.safetensors", "*.model"],
+            allow_patterns=["*.json", "*.safetensors", "*.model"],
             local_dir=MODEL_PATH,
         )
         print(f"Model preloaded in {time() - starting_time:.2f} seconds")
