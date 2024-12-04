@@ -24,7 +24,7 @@ run-lambda:
 	poetry run python playground/test_lambda.py
 
 preload-model:
-	poetry run python zero_shot_labeler/preload.py
+	poetry run python zero_shot_labeler/__init__.py
 
 image:
 	docker build -t zero-shot-labeler --force-rm --progress=plain --no-cache .
@@ -40,6 +40,12 @@ run-image:
 
 test-endpoint:
 	curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{ \
+		"text": "The customer service was excellent and resolved my issue quickly!", \
+		"labels": ["positive", "negative", "neutral"] \
+	}'
+
+test-modal-endpoint:
+	curl -XPOST -H "Content-Type: application/json" "https://0xjgv--zero-shot-labeler-labeler-dev.modal.run/" -d '{ \
 		"text": "The customer service was excellent and resolved my issue quickly!", \
 		"labels": ["positive", "negative", "neutral"] \
 	}'

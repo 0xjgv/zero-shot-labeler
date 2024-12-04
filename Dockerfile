@@ -15,7 +15,7 @@ COPY zero_shot_labeler ${LAMBDA_TASK_ROOT}/zero_shot_labeler/
 
 # Make the model directory and run the preload script in builder
 RUN mkdir -p /opt/ml/model && \
-  poetry run python zero_shot_labeler/labeler.py
+  poetry run python zero_shot_labeler/__init__.py
 
 # Set Python path
 ENV PYTHONPATH "${LAMBDA_TASK_ROOT}"
