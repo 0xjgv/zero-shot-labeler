@@ -20,7 +20,7 @@ class LabelScore(NamedTuple):
     label: str
 
 
-class Labeler:
+class ZeroShotLabeler:
     __slots__ = ("pipeline",)
     _instance = None
     _lock = Lock()
@@ -28,7 +28,7 @@ class Labeler:
     def __new__(cls, *args, **kwargs):
         with cls._lock:
             if cls._instance is None:
-                cls._instance = super(Labeler, cls).__new__(cls)
+                cls._instance = super(ZeroShotLabeler, cls).__new__(cls)
         return cls._instance
 
     @classmethod
@@ -72,7 +72,7 @@ class Labeler:
 # Preload the model during container initialization.
 # This saves time on the first request and allows
 # for faster subsequent requests.
-preload = Labeler.preload_model
+preload = ZeroShotLabeler.preload_model
 
 if __name__ == "__main__":
     force_download = "--force-download" in argv
