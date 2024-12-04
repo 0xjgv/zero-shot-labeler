@@ -4,6 +4,7 @@ from threading import Lock
 from time import time
 from typing import NamedTuple, cast
 
+from huggingface_hub import snapshot_download
 from transformers import AutoTokenizer, pipeline
 
 DEFAULT_MODEL = "MoritzLaurer/deberta-v3-large-zeroshot-v2.0"
@@ -40,12 +41,11 @@ class ZeroShotLabeler:
 
         print(f"Preloading model from {model} to {MODEL_PATH}")
         starting_time = time()
-        tokenizer = AutoTokenizer.from_pretrained(model)
-        pipeline(
-            "zero-shot-classification",
-            tokenizer=tokenizer,
-            model=model,
-        ).save_pretrained(MODEL_PATH)
+        snapshot_download(
+            model,
+            allow_patterns=["*.json", "*.bin", "*.pt", "*.safetensors", "*.model"],
+            local_dir=MODEL_PATH,
+        )
         print(f"Model preloaded in {time() - starting_time:.2f} seconds")
 
     def __init__(self, model: str = DEFAULT_MODEL):
@@ -53,8 +53,10 @@ class ZeroShotLabeler:
             model_path = MODEL_PATH.as_posix() if MODEL_PATH.exists() else model
             starting_time = time()
             print(f"Loading model from {model_path}")
+            tokenizer = AutoTokenizer.from_pretrained(model)
             self.pipeline = pipeline(
                 "zero-shot-classification",
+                tokenizer=tokenizer,
                 model=model_path,
             )
             print(f"Model loaded in {time() - starting_time:.2f} seconds")
