@@ -14,7 +14,7 @@ RUN poetry install --no-cache --no-root --only main
 COPY zero_shot_labeler ${LAMBDA_TASK_ROOT}/zero_shot_labeler/
 
 # Make the model directory and run the preload script in builder
-RUN mkdir -p /opt/ml/model && \
+RUN mkdir -p /opt/ml/models && \
   poetry run python zero_shot_labeler/__init__.py
 
 # Set Python path

@@ -44,11 +44,17 @@ test-endpoint:
 		"labels": ["positive", "negative", "neutral", "customer_feedback"] \
 	}'
 
+run-modal:
+	modal serve modal_labeler.py
+
 test-modal-endpoint:
 	curl -XPOST -H "Content-Type: application/json" "https://zero-shot-labeler.modal.run" -d '{ \
 		"text": "The customer service was excellent and resolved my issue quickly!", \
 		"labels": ["positive", "negative", "neutral", "customer_feedback"] \
 	}'
+
+deploy-modal:
+	modal deploy modal_labeler.py
 
 # Configure Poetry with PyPI token from .env
 config-pypi:

@@ -12,8 +12,8 @@ reverse.py
 scraps.py
 NOTES.md
 
-# Model
-*/opt/ml/model
+# Models
+/opt/ml/models
 
 # Distribution
 dist/
