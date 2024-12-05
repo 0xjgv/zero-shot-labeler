@@ -41,13 +41,13 @@ run-image:
 test-endpoint:
 	curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{ \
 		"text": "The customer service was excellent and resolved my issue quickly!", \
-		"labels": ["positive", "negative", "neutral"] \
+		"labels": ["positive", "negative", "neutral", "customer_feedback"] \
 	}'
 
 test-modal-endpoint:
 	curl -XPOST -H "Content-Type: application/json" "https://0xjgv--zero-shot-labeler-labeler-dev.modal.run/" -d '{ \
 		"text": "The customer service was excellent and resolved my issue quickly!", \
-		"labels": ["positive", "negative", "neutral"] \
+		"labels": ["positive", "negative", "neutral", "customer_feedback"] \
 	}'
 
 # Configure Poetry with PyPI token from .env
