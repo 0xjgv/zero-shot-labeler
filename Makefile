@@ -45,7 +45,7 @@ test-endpoint:
 	}'
 
 test-modal-endpoint:
-	curl -XPOST -H "Content-Type: application/json" "https://0xjgv--zero-shot-labeler-labeler-dev.modal.run/" -d '{ \
+	curl -XPOST -H "Content-Type: application/json" "https://zero-shot-labeler.modal.run" -d '{ \
 		"text": "The customer service was excellent and resolved my issue quickly!", \
 		"labels": ["positive", "negative", "neutral", "customer_feedback"] \
 	}'

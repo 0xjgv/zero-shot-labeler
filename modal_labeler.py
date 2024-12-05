@@ -1,41 +1,48 @@
 import modal
+from modal import gpu
 
-from zero_shot_labeler import ZeroShotLabeler
+from zero_shot_labeler import ZeroShotLabeler as _ZeroShotLabeler
 
-zero_shot_labeler_image = (
-    modal.Image.debian_slim(python_version="3.11")
-    .pip_install("transformers[torch]==4.46.3")
-    .run_function(ZeroShotLabeler.preload_model)
+zero_shot_labeler_image = modal.Image.debian_slim(python_version="3.11").pip_install(
+    "transformers[torch]==4.46.3"
 )
 
 app = modal.App("zero-shot-labeler", image=zero_shot_labeler_image)
 
+# NVIDIA T4 GPU ($0.000164 / sec)
+gpu_config = gpu.T4(count=1)
+# # Uncomment to disable GPU
+# Physical core ($0.000038 / core / sec)
+# gpu_config = None
 
-@app.cls()
-class Labeler:
+
+@app.cls(gpu=gpu_config)
+class ZeroShotLabeler:
+    @modal.build()
+    def preload_model(self):
+        _ZeroShotLabeler.preload_model()
+
     @modal.enter()
-    def setup_labeler(self):
-        self.zero_shot_labeler = ZeroShotLabeler()
+    def initialize_model(self):
+        self.labeler = _ZeroShotLabeler(gpu=gpu_config is not None)
+
+    # TODO: Uncomment to enable web endpoint
+    # @modal.web_endpoint(method="POST", docs=True)
+    # def label(self, data: dict) -> dict[str, float]:
+    #     return self.labeler(data["text"], data["labels"])
 
     @modal.method()
-    def label(self, text: str, labels: list[str]) -> dict[str, float]:
-        return self.zero_shot_labeler(text, labels)
-
-
-@app.function()
-def labeler(text: str, labels: list[str]) -> dict[str, float]:
-    labeler = Labeler()
-    scores = labeler.label.remote(text, labels)
-    print("This code is running on a remote worker!")
-    return scores
+    def generate_labels(self, text: str, labels: list[str]) -> dict[str, float]:
+        return self.labeler(text, labels)
 
 
 @app.local_entrypoint()
-def main():
+def local_test():
     labels = ["positive", "negative"]
-    text = "I love Modal"
-    print(f"Labeling text: {text}")
     print(f"Labels: {labels}")
 
-    scores = labeler.remote(text, labels)
+    text = "I really love Modal a lot!"
+    print(f"Labeling text: {text}")
+
+    scores = ZeroShotLabeler.generate_labels.remote(text, labels)
     print(f"Labeling result: {scores}")
