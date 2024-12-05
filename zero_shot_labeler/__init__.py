@@ -39,31 +39,40 @@ class ZeroShotLabeler:
     def preload_model(cls, *, model: str = DEFAULT_MODEL, force_download: bool = False):
         """Preload the model during container initialization"""
         if MODEL_PATH.exists() and not force_download:
-            print(f"[{cls.__name__}]: Model already exists at {MODEL_PATH}")
+            print(f"[> {cls.__name__}]:", f"Model already exists at {MODEL_PATH}")
             return
 
-        print(f"[{cls.__name__}]: Preloading model from {model} to {MODEL_PATH}")
+        print(f"[> {cls.__name__}]:", f"Preloading model from {model} to {MODEL_PATH}")
         starting_time = time()
         snapshot_download(
             model,
             allow_patterns=["*.json", "*.safetensors", "*.model"],
-            cache_dir=MODEL_PATH,
-            local_dir=MODEL_PATH,
+            local_dir=MODEL_PATH,  # Save the model to the MODEL_PATH
         )
         print(
-            f"[{cls.__name__}]: Model preloaded in {time() - starting_time:.2f} seconds"
+            f"[> {cls.__name__}]:",
+            f"Model preloaded in {time() - starting_time:.2f} seconds",
         )
 
     def __init__(self, model: str = DEFAULT_MODEL):
-        model_path = MODEL_PATH.as_posix() if MODEL_PATH.exists() else model
         starting_time = time()
-        self.log(f"Loading model from {model_path}")
-        tokenizer = AutoTokenizer.from_pretrained(model)
-        self.pipeline = pipeline(
-            "zero-shot-classification",
-            tokenizer=tokenizer,
-            model=model_path,
-        )
+        if MODEL_PATH.exists() and (model_path := MODEL_PATH.as_posix()):
+            self.log(f"Loading model from {model_path}")
+            tokenizer = AutoTokenizer.from_pretrained(model_path)
+            self.pipeline = pipeline(
+                "zero-shot-classification",
+                tokenizer=tokenizer,
+                model=model_path,
+            )
+        else:
+            self.log(f"Loading model from {model}")
+            tokenizer = AutoTokenizer.from_pretrained(model)
+            self.pipeline = pipeline(
+                "zero-shot-classification",
+                tokenizer=tokenizer,
+                model=model,
+            )
+            self.pipeline.save_pretrained(MODEL_PATH)
         self.log(f"Model loaded in {time() - starting_time:.2f} seconds")
 
     def __call__(self, text: str, labels: list[str]) -> LabelerOutput:
