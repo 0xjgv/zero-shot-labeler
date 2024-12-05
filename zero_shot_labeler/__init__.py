@@ -54,13 +54,14 @@ class ZeroShotLabeler:
             f"Model preloaded in {time() - starting_time:.2f} seconds",
         )
 
-    def __init__(self, model: str = DEFAULT_MODEL):
+    def __init__(self, model: str = DEFAULT_MODEL, gpu: bool = False):
         starting_time = time()
         if MODEL_PATH.exists() and (model_path := MODEL_PATH.as_posix()):
             self.log(f"Loading model from {model_path}")
             tokenizer = AutoTokenizer.from_pretrained(model_path)
             self.pipeline = pipeline(
                 "zero-shot-classification",
+                device="cuda" if gpu else "cpu",
                 tokenizer=tokenizer,
                 model=model_path,
             )
