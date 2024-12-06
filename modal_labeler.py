@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import modal
 from modal import gpu
 
@@ -34,6 +36,16 @@ class ZeroShotLabeler:
     @modal.method()
     def generate_labels(self, text: str, labels: list[str]) -> dict[str, float]:
         return self.labeler(text, labels)
+
+
+@app.function(schedule=modal.Cron("0 * * * *"))  # run at the start of the hour
+def update_keep_warm():
+    # 15-16 UTC (GMT+1 = 16-17 CEST)
+    peak_hours_start, peak_hours_end = 15, 16
+    container_count = 0
+    if peak_hours_start <= datetime.now(timezone.utc).hour < peak_hours_end:
+        container_count = 1
+    ZeroShotLabeler.generate_labels.keep_warm(container_count)
 
 
 @app.local_entrypoint()
