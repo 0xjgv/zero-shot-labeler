@@ -53,7 +53,7 @@ test-modal-endpoint:
 		"labels": ["positive", "negative", "neutral", "customer_feedback"] \
 	}'
 
-deploy-modal:
+modal-deploy:
 	modal deploy modal_labeler.py
 
 # Configure Poetry with PyPI token from .env

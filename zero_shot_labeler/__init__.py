@@ -1,5 +1,4 @@
 from pathlib import Path
-from sys import argv
 from threading import Lock
 from time import time
 from typing import NamedTuple, cast
@@ -44,7 +43,10 @@ class ZeroShotLabeler:
             print(f"[> {cls.__name__}]:", f"Model already exists at {MODELS_DIR_PATH}")
             return
 
-        print(f"[> {cls.__name__}]:", f"Preloading model from {MODEL_ID} to {MODELS_DIR_PATH}")
+        print(
+            f"[> {cls.__name__}]:",
+            f"Preloading model from {MODEL_ID} to {MODELS_DIR_PATH}",
+        )
         starting_time = time()
         snapshot_download(
             MODEL_ID,
