@@ -1,12 +1,13 @@
-from datetime import datetime, timezone
+from os import environ
 
 import modal
-from modal import gpu
+from modal import Secret, gpu
 
+from zero_shot_labeler import LabelerOutput
 from zero_shot_labeler import ZeroShotLabeler as _ZeroShotLabeler
 
 zero_shot_labeler_image = modal.Image.debian_slim(python_version="3.11").pip_install(
-    "transformers[torch]==4.46.3"
+    "transformers[torch]==4.46.3", "deepl"
 )
 
 app = modal.App("zero-shot-labeler", image=zero_shot_labeler_image)
@@ -18,7 +19,7 @@ gpu_config = gpu.T4(count=1)
 # gpu_config = None
 
 
-@app.cls(gpu=gpu_config)
+@app.cls(gpu=gpu_config, secrets=[Secret.from_name("deepl-api")], keep_warm=1)
 class ZeroShotLabeler:
     @modal.build()
     def preload_model(self):
@@ -26,26 +27,29 @@ class ZeroShotLabeler:
 
     @modal.enter()
     def initialize_model(self):
-        self.labeler = _ZeroShotLabeler(gpu=gpu_config is not None)
+        from deepl import Translator
 
-    # TODO: Uncomment to enable web endpoint
-    # @modal.web_endpoint(method="POST", docs=True)
-    # def label(self, data: dict) -> dict[str, float]:
-    #     return self.labeler(data["text"], data["labels"])
+        self.labeler = _ZeroShotLabeler(gpu=gpu_config is not None)
+        self.translator = Translator(environ["DEEPL_API_KEY"])
 
     @modal.method()
-    def generate_labels(self, text: str, labels: list[str]) -> dict[str, float]:
+    def generate_labels(self, text: str, labels: list[str]) -> LabelerOutput:
         return self.labeler(text, labels)
 
+    # TODO: Uncomment to enable web endpoint
+    @modal.web_endpoint(method="POST", docs=True)
+    def label(self, data: dict) -> LabelerOutput:
+        labels = data["labels"]
+        text = data["text"]
+        if not (labels and text):
+            raise ValueError("labels and text must be provided")
+        if not isinstance(labels, list):
+            raise ValueError("labels must be a list")
+        if not isinstance(text, str):
+            raise ValueError("text must be a string")
 
-@app.function(schedule=modal.Cron("0 * * * *"))  # run at the start of the hour
-def update_keep_warm():
-    # 15-16 UTC (GMT+1 = 16-17 CEST)
-    peak_hours_start, peak_hours_end = 15, 16
-    container_count = 0
-    if peak_hours_start <= datetime.now(timezone.utc).hour < peak_hours_end:
-        container_count = 1
-    ZeroShotLabeler.generate_labels.keep_warm(container_count)
+        result = self.translator.translate_text(text, target_lang="EN-US")
+        return self.labeler(result.text, labels)
 
 
 @app.local_entrypoint()

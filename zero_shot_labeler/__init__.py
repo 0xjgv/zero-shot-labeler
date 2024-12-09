@@ -1,7 +1,8 @@
+from dataclasses import dataclass
 from pathlib import Path
 from threading import Lock
 from time import time
-from typing import NamedTuple, cast
+from typing import cast
 
 from huggingface_hub import snapshot_download
 from transformers import AutoTokenizer, pipeline
@@ -11,15 +12,18 @@ from transformers.utils import move_cache
 # /var/task/zero_shot_labeler/opt/ml/models
 MODELS_DIR_PATH = Path(__file__).parent.parent / "opt/ml/models"
 # Default model ID
+# https://huggingface.co/MoritzLaurer/deberta-v3-large-zeroshot-v2.0
 MODEL_ID = "MoritzLaurer/deberta-v3-large-zeroshot-v2.0"
+# Multilingual model
+# https://huggingface.co/MoritzLaurer/bge-m3-zeroshot-v2.0-c
+# MODEL_ID = "MoritzLaurer/bge-m3-zeroshot-v2.0-c"
 
 
-LabelerOutput = dict[str, float]
-
-
-class LabelScore(NamedTuple):
-    score: float
-    label: str
+@dataclass
+class LabelerOutput:
+    scores: dict[str, float]
+    input_text: str
+    model_id: str
 
 
 class ZeroShotLabeler:
@@ -91,7 +95,8 @@ class ZeroShotLabeler:
         self.log(f"Classification in {time() - starting_time:.2f} seconds")
         labels = output.get("labels", [])
         scores = output.get("scores", [])
-        return {label: score for label, score in zip(labels, scores)}
+        score_by_label = {label: score for label, score in zip(labels, scores)}
+        return LabelerOutput(scores=score_by_label, model_id=MODEL_ID, input_text=text)
 
 
 # Preload the model during container initialization.
