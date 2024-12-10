@@ -12,11 +12,17 @@ from transformers.utils import move_cache
 # /var/task/zero_shot_labeler/opt/ml/models
 MODELS_DIR_PATH = Path(__file__).parent.parent / "opt/ml/models"
 # Default model ID
-# https://huggingface.co/MoritzLaurer/deberta-v3-large-zeroshot-v2.0
+# https://huggingface.co/MoritzLaurer/deberta-v3-large-zeroshot-v2.0 (best)
 MODEL_ID = "MoritzLaurer/deberta-v3-large-zeroshot-v2.0"
 # Multilingual model
 # https://huggingface.co/MoritzLaurer/bge-m3-zeroshot-v2.0-c
 # MODEL_ID = "MoritzLaurer/bge-m3-zeroshot-v2.0-c"
+
+# Embedding model (few shot)
+# https://huggingface.co/HIT-TMG/KaLM-embedding-multilingual-mini-instruct-v1
+# EMBEDDING_MODEL_ID = "HIT-TMG/KaLM-embedding-multilingual-mini-instruct-v1"
+# https://huggingface.co/jinaai/jina-embeddings-v3 (best)
+EMBEDDING_MODEL_ID = "jinaai/jina-embeddings-v3"
 
 
 @dataclass

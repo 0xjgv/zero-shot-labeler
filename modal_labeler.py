@@ -19,7 +19,8 @@ gpu_config = gpu.T4(count=1)
 # gpu_config = None
 
 
-@app.cls(gpu=gpu_config, secrets=[Secret.from_name("deepl-api")], keep_warm=1)
+# @app.cls(gpu=gpu_config, secrets=[Secret.from_name("deepl-api")], keep_warm=1)
+@app.cls(gpu=gpu_config, secrets=[Secret.from_name("deepl-api")])
 class ZeroShotLabeler:
     @modal.build()
     def preload_model(self):
