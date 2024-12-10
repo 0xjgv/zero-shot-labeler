@@ -20,6 +20,9 @@ ruff = "^0.6.8"
 pytest = "^8.3.3"
 ipykernel = "^6.29.5"
 modal = "^0.67.23"
+scikit-learn = "^1.6.0"
+sentence-transformers = "^3.3.1"
+einops = "^0.8.0"
 
 [build-system]
 requires = ["poetry-core"]

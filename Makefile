@@ -14,8 +14,9 @@ clean:
 	rm -rf .pytest_cache __pycache__ */__pycache__ */*/__pycache__
 	poetry run ruff clean
 
-lint: format clean
+lint: format
 	poetry run ruff check .
+	make clean
 
 test:
 	poetry run pytest -vv
