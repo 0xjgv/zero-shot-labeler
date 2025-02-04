@@ -2,14 +2,12 @@
 description = "A lightweight zero-shot labeler for text classification"
 authors = ["Juan Gaitán-Villamizar <juans.gaitan@gmail.com>"]
 repository = "https://github.com/0xjgv/zero-shot-labeler"
+homepage = "https://github.com/0xjgv/zero-shot-labeler"
 name = "zero_shot_labeler"
 readme = "README.md"
 version = "0.1.3"
 license = "MIT"
 
-[project.urls]
-issues = "https://github.com/0xjgv/zero-shot-labeler/issues"
-homepage = "https://github.com/0xjgv/zero-shot-labeler"
 
 [tool.poetry.dependencies]
 python = ">=3.11"
